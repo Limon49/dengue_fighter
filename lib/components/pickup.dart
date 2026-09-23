@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 
 import '../my_game.dart';
 
-enum PickupType { bomb, laser, shield }
+enum PickupType { bat, spray, net }
 
 class Pickup extends SpriteComponent with HasGameReference<MyGame> {
   final PickupType pickupType;

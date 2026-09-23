@@ -8,17 +8,17 @@ import 'package:flutter/widgets.dart';
 import '../my_game.dart';
 import 'explosion.dart';
 
-class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
+class Mosquito extends SpriteComponent with HasGameReference<MyGame> {
   final Random _random = Random();
-  static const double _maxSize = 120;
+  static const double _maxSize = 100;
   late Vector2 _velocity;
   final Vector2 _originalVelocity = Vector2.zero();
   late double _spinSpeed;
-  final double _maxHealth = 3;
+  final double _maxHealth = 2;
   late double _health;
   bool _isKnockedback = false;
 
-  Asteroid({required super.position, double size = _maxSize})
+  Mosquito({required super.position, double size = _maxSize})
       : super(
           size: Vector2.all(size),
           anchor: Anchor.center,
@@ -34,8 +34,8 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
 
   @override
   FutureOr<void> onLoad() async {
-    final int imageNum = _random.nextInt(3) + 1;
-    sprite = await game.loadSprite('asteroid$imageNum.png');
+    final int imageNum = _random.nextInt(2) + 1;
+    sprite = await game.loadSprite('mosquito$imageNum.png');
 
     return super.onLoad();
   }
@@ -62,12 +62,12 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
   }
 
   void _handleScreenBounds() {
-    // remove the asteroid from the game if it goes below the bottom
+    // remove the mosquito from the game if it goes below the bottom
     if (position.y > game.size.y + size.y / 2) {
       removeFromParent();
     }
 
-    // perform wraparound if the asteroid goes over the left or right edge
+    // perform wraparound if the mosquito goes over the left or right edge
     final double screenWidth = game.size.x;
     if (position.x < -size.x / 2) {
       position.x = screenWidth + size.x / 2;
@@ -85,7 +85,7 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
       game.incrementScore(2);
       removeFromParent();
       _createExplosion();
-      _splitAsteroid();
+      _splitMosquito();
     } else {
       game.incrementScore(1);
       _flashWhite();
@@ -137,11 +137,11 @@ class Asteroid extends SpriteComponent with HasGameReference<MyGame> {
     game.add(explosion);
   }
 
-  void _splitAsteroid() {
+  void _splitMosquito() {
     if (size.x <= _maxSize / 3) return;
 
     for (int i = 0; i < 3; i++) {
-      final Asteroid fragment = Asteroid(
+      final Mosquito fragment = Mosquito(
         position: position.clone(),
         size: size.x - _maxSize / 3,
       );

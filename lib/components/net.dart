@@ -6,15 +6,15 @@ import 'package:flame/effects.dart';
 import 'package:flutter/widgets.dart';
 
 import '../my_game.dart';
-import 'asteroid.dart';
+import 'mosquito.dart';
 
-class Shield extends SpriteComponent
+class Net extends SpriteComponent
     with HasGameReference<MyGame>, CollisionCallbacks {
-  Shield() : super(size: Vector2.all(200), anchor: Anchor.center);
+  Net() : super(size: Vector2.all(200), anchor: Anchor.center);
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await game.loadSprite('shield.png');
+    sprite = await game.loadSprite('net.png');
 
     position += game.player.size / 2;
 
@@ -38,7 +38,7 @@ class Shield extends SpriteComponent
       ),
       onComplete: () {
         removeFromParent();
-        game.player.activeShield = null;
+        game.player.activeNet = null;
       },
     );
     add(fadeOutEffect);
@@ -50,7 +50,7 @@ class Shield extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is Asteroid) {
+    if (other is Mosquito) {
       other.takeDamage();
     }
   }

@@ -3,17 +3,17 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:advan_flame/components/pickup.dart';
-import 'package:advan_flame/components/shield.dart';
+import 'package:advan_flame/components/net.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/services.dart';
 
 import '../my_game.dart';
-import 'asteroid.dart';
-import 'bomb.dart';
+import 'mosquito.dart';
+import 'bat.dart';
 import 'explosion.dart';
-import 'laser.dart';
+import 'spray.dart';
 
 class Player extends SpriteAnimationComponent
     with HasGameReference<MyGame>, KeyboardHandler, CollisionCallbacks {
@@ -24,8 +24,8 @@ class Player extends SpriteAnimationComponent
   bool _isDestroyed = false;
   final Random _random = Random();
   late Timer _explosionTimer;
-  late Timer _laserPowerupTimer;
-  Shield? activeShield;
+  late Timer _sprayPowerupTimer;
+  Net? activeNet;
   late String _color;
 
   Player() {
@@ -36,7 +36,7 @@ class Player extends SpriteAnimationComponent
       autoStart: false,
     );
 
-    _laserPowerupTimer = Timer(
+    _sprayPowerupTimer = Timer(
       10.0,
       autoStart: false,
     );
@@ -68,20 +68,18 @@ class Player extends SpriteAnimationComponent
       return;
     }
 
-    if (_laserPowerupTimer.isRunning()) {
-      _laserPowerupTimer.update(dt);
+    if (_sprayPowerupTimer.isRunning()) {
+      _sprayPowerupTimer.update(dt);
     }
 
-    // combine the joystick input with the keyboard movement
     final Vector2 movement = game.joystick.relativeDelta + _keyboardMovement;
     position += movement.normalized() * 200 * dt;
 
     _handleScreenBounds();
 
-    // perform the shooting logic
     _elapsedFireTime += dt;
     if (_isShooting && _elapsedFireTime >= _fireCooldown) {
-      _fireLaser();
+      _fireSpray();
       _elapsedFireTime = 0.0;
     }
   }
@@ -101,14 +99,12 @@ class Player extends SpriteAnimationComponent
     final double screenWidth = game.size.x;
     final double screenHeight = game.size.y;
 
-    // prevent the player from going off the top or bottom edges
     position.y = clampDouble(
       position.y,
       size.y / 2,
       screenHeight - size.y / 2,
     );
 
-    // perform wraparound if the player goes over the left or right edge
     if (position.x < 0) {
       position.x = screenWidth;
     } else if (position.x > screenWidth) {
@@ -124,22 +120,22 @@ class Player extends SpriteAnimationComponent
     _isShooting = false;
   }
 
-  void _fireLaser() {
+  void _fireSpray() {
     game.audioManager.playSound('laser');
 
     game.add(
-      Laser(position: position.clone() + Vector2(0, -size.y / 2)),
+      Spray(position: position.clone() + Vector2(0, -size.y / 2)),
     );
 
-    if (_laserPowerupTimer.isRunning()) {
+    if (_sprayPowerupTimer.isRunning()) {
       game.add(
-        Laser(
+        Spray(
           position: position.clone() + Vector2(0, -size.y / 2),
           angle: 15 * degrees2Radians,
         ),
       );
       game.add(
-        Laser(
+        Spray(
           position: position.clone() + Vector2(0, -size.y / 2),
           angle: -15 * degrees2Radians,
         ),
@@ -204,8 +200,8 @@ class Player extends SpriteAnimationComponent
 
     if (_isDestroyed) return;
 
-    if (other is Asteroid) {
-      if (activeShield == null) _handleDestruction();
+    if (other is Mosquito) {
+      if (activeNet == null) _handleDestruction();
     } else if (other is Pickup) {
       game.audioManager.playSound('collect');
 
@@ -213,18 +209,18 @@ class Player extends SpriteAnimationComponent
       game.incrementScore(1);
 
       switch (other.pickupType) {
-        case PickupType.laser:
-          _laserPowerupTimer.start();
+        case PickupType.spray:
+          _sprayPowerupTimer.start();
           break;
-        case PickupType.bomb:
-          game.add(Bomb(position: position.clone()));
+        case PickupType.bat:
+          game.add(Bat(position: position.clone()));
           break;
-        case PickupType.shield:
-          if (activeShield != null) {
-            remove(activeShield!);
+        case PickupType.net:
+          if (activeNet != null) {
+            remove(activeNet!);
           }
-          activeShield = Shield();
-          add(activeShield!);
+          activeNet = Net();
+          add(activeNet!);
           break;
       }
     }

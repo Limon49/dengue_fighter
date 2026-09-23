@@ -6,11 +6,11 @@ import 'package:flame/effects.dart';
 import 'package:flutter/widgets.dart';
 
 import '../my_game.dart';
-import 'asteroid.dart';
+import 'mosquito.dart';
 
-class Bomb extends SpriteComponent
+class Bat extends SpriteComponent
     with HasGameReference<MyGame>, CollisionCallbacks {
-  Bomb({required super.position})
+  Bat({required super.position})
       : super(
           size: Vector2.all(1),
           anchor: Anchor.center,
@@ -21,7 +21,7 @@ class Bomb extends SpriteComponent
   FutureOr<void> onLoad() async {
     game.audioManager.playSound('fire');
 
-    sprite = await game.loadSprite('bomb.png');
+    sprite = await game.loadSprite('bat.png');
 
     add(CircleHitbox(isSolid: true));
 
@@ -46,7 +46,7 @@ class Bomb extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is Asteroid) {
+    if (other is Mosquito) {
       other.takeDamage();
     }
   }

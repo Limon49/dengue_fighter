@@ -5,21 +5,18 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../my_game.dart';
-import 'asteroid.dart';
+import 'mosquito.dart';
 
-class Laser extends SpriteComponent
+class Spray extends SpriteComponent
     with HasGameReference<MyGame>, CollisionCallbacks {
-  Laser({required super.position, super.angle = 0.0})
-      : super(
-          anchor: Anchor.center,
-          priority: -1,
-        );
+  Spray({required super.position, super.angle = 0.0})
+      : super(anchor: Anchor.center, priority: -1);
 
   @override
   FutureOr<void> onLoad() async {
-    sprite = await game.loadSprite('laser.png');
+    sprite = await game.loadSprite('spray.png');
 
-    size *= 0.25;
+    size *= 0.15;
 
     add(RectangleHitbox());
 
@@ -32,7 +29,7 @@ class Laser extends SpriteComponent
 
     position += Vector2(sin(angle), -cos(angle)) * 500 * dt;
 
-    // remove the laser from the game if it goes above the top
+    // remove the spray from the game if it goes above the top
     if (position.y < -size.y / 2) {
       removeFromParent();
     }
@@ -42,7 +39,7 @@ class Laser extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other is Asteroid) {
+    if (other is Mosquito) {
       removeFromParent();
       other.takeDamage();
     }

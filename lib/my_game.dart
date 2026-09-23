@@ -3,13 +3,15 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-import 'components/asteroid.dart';
 import 'components/audio_manager.dart';
+import 'components/background.dart';
+import 'components/mosquito.dart';
 import 'components/pickup.dart';
 import 'components/player.dart';
 import 'components/shoot_button.dart';
@@ -33,12 +35,11 @@ class MyGame extends FlameGame
   FutureOr<void> onLoad() async {
     await Flame.device.fullScreen();
     await Flame.device.setPortrait();
-
-    // initialize the audio manager and play the music
     audioManager = AudioManager();
     await add(audioManager);
     audioManager.playMusic();
 
+    add(Background()..priority = -20);
     _createStars();
 
     return super.onLoad();
@@ -87,7 +88,7 @@ class MyGame extends FlameGame
 
   void _createAsteroidSpawner() {
     _asteroidSpawner = SpawnComponent.periodRange(
-      factory: (index) => Asteroid(position: _generateSpawnPosition()),
+      factory: (index) => Mosquito(position: _generateSpawnPosition()),
       minPeriod: 0.7,
       maxPeriod: 1.2,
       selfPositioning: true,
@@ -171,31 +172,27 @@ class MyGame extends FlameGame
   }
 
   void restartGame() {
-    // remove any asteroids and pickups that are currently in the game
     children.whereType<PositionComponent>().forEach((component) {
-      if (component is Asteroid || component is Pickup) {
+      if (component is Mosquito || component is Pickup) {
         remove(component);
       }
     });
 
-    // reset the asteroid and pickup spawners
     _asteroidSpawner.timer.start();
     _pickupSpawner.timer.start();
 
-    // reset the score to 0
     _score = 0;
     _scoreDisplay.text = '0';
 
-    // create a new player sprite
     _createPlayer();
 
     resumeEngine();
   }
 
   void quitGame() {
-    // remove everything from the game except the stars
+    // remove everything from the game except the stars and background
     children.whereType<PositionComponent>().forEach((component) {
-      if (component is! Star) {
+      if (component is! Star && component is! Background) {
         remove(component);
       }
     });

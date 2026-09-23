@@ -18,14 +18,11 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
   void initState() {
     super.initState();
 
-    Future.delayed(
-      const Duration(milliseconds: 0),
-      () {
-        setState(() {
-          _opacity = 1.0;
-        });
-      },
-    );
+    Future.delayed(const Duration(milliseconds: 0), () {
+      setState(() {
+        _opacity = 1.0;
+      });
+    });
   }
 
   @override
@@ -41,9 +38,10 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
       child: Container(
         color: Colors.black.withAlpha(150),
         alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
             const Text(
               'GAME OVER',
               style: TextStyle(
@@ -62,8 +60,10 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                 });
               },
               style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 25,
+                ),
                 backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -71,10 +71,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
               ),
               child: Text(
                 'PLAY AGAIN',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 28),
               ),
             ),
             const SizedBox(height: 15),
@@ -87,24 +84,50 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                 });
               },
               style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                backgroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 25,
+                ),
+                backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
                 ),
               ),
               child: Text(
                 'QUIT GAME',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 28),
               ),
             ),
-          ],
+            const SizedBox(height: 15),
+            TextButton(
+              onPressed: () {
+                widget.game.audioManager.playSound('click');
+                widget.game.quitGame();
+                setState(() {
+                  _opacity = 0.0;
+                });
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 25,
+                ),
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+              child: Text(
+                'NEXT GAME',
+                style: TextStyle(color: Colors.white, fontSize: 28),
+              ),
+            ),
+            const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

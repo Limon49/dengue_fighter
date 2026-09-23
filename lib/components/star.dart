@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flame/extensions.dart';
 
 import '../my_game.dart';
 
@@ -21,7 +21,8 @@ class Star extends CircleComponent with HasGameReference<MyGame> {
 
     _speed = size.x * (40 + _random.nextInt(10));
 
-    paint.color = Color.fromRGBO(255, 255, 255, size.x / _maxSize);
+    // Change from white stars to light blue rain droplets for Bangladesh monsoon theme
+    paint.color = Color.fromRGBO(150, 200, 255, size.x / _maxSize);
 
     return super.onLoad();
   }
